@@ -1,26 +1,31 @@
 package com.nikhilyadav.alleassignment.utils
 
+import android.util.Log
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import com.nikhilyadav.alleassignment.ui.feature.gallery.GalleryViewModel
+import kotlinx.coroutines.flow.distinctUntilChanged
+
+private const val TAG = "rememberCurrentPhoto"
 
 @Composable
 internal fun rememberCurrentPhoto(listState: LazyListState, viewModel: GalleryViewModel) {
     val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(coroutineScope) {
-        snapshotFlow { listState.layoutInfo }.collect { visibleItems ->
-            val visibleItemsSize = visibleItems.visibleItemsInfo.size
-            val firstIndex = listState.firstVisibleItemIndex
-            var indexToReturn: Int = -1
-            if (firstIndex == 0) {
-                indexToReturn = visibleItemsSize - 5
-            } else {
-                indexToReturn = firstIndex + 4
+        snapshotFlow { listState.layoutInfo.visibleItemsInfo.size }
+            .distinctUntilChanged()
+            .collect() { visibleItemsSize ->
+                val firstIndex = listState.firstVisibleItemIndex
+                val indexToReturn = if (firstIndex == 0) {
+                    visibleItemsSize - 5
+                } else {
+                    firstIndex + 4
+                }
+                Log.d(TAG, "rememberCurrentPhoto: $indexToReturn ")
+                viewModel.selectedImage(indexToReturn)
             }
-            viewModel.selectedImage(indexToReturn)
-        }
     }
 }

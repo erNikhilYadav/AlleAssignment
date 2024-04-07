@@ -1,6 +1,7 @@
 package com.nikhilyadav.alleassignment.ui
 
 import android.Manifest
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -35,9 +36,16 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val storagePermissionState = rememberPermissionState(
-                        Manifest.permission.READ_EXTERNAL_STORAGE
-                    )
+                    val storagePermissionState =
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            rememberPermissionState(
+                                Manifest.permission.READ_MEDIA_IMAGES
+                            )
+                        } else {
+                            rememberPermissionState(
+                                Manifest.permission.READ_EXTERNAL_STORAGE
+                            )
+                        }
                     if (!storagePermissionState.status.isGranted) {
                         RequestPermissionScreen(permissionState = storagePermissionState) {
                             Toast.makeText(

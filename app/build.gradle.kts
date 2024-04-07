@@ -70,6 +70,7 @@ dependencies {
     //COIL
     implementation(libs.coil.compose)
 
+    //Permissions Handler for Compose (Alpha)
     implementation(libs.accompanist.permissions)
 
 
