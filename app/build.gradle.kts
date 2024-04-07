@@ -70,4 +70,7 @@ dependencies {
     //COIL
     implementation(libs.coil.compose)
 
+    implementation(libs.accompanist.permissions)
+
+
 }
