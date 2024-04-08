@@ -1,6 +1,5 @@
 package com.nikhilyadav.alleassignment.utils
 
-import android.util.Log
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -15,17 +14,11 @@ private const val TAG = "rememberCurrentPhoto"
 internal fun rememberCurrentPhoto(listState: LazyListState, viewModel: GalleryViewModel) {
     val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(coroutineScope) {
-        snapshotFlow { listState.layoutInfo.visibleItemsInfo.size }
+        snapshotFlow { listState.firstVisibleItemIndex }
             .distinctUntilChanged()
-            .collect() { visibleItemsSize ->
-                val firstIndex = listState.firstVisibleItemIndex
-                val indexToReturn = if (firstIndex == 0) {
-                    visibleItemsSize - 5
-                } else {
-                    firstIndex + 4
-                }
-                Log.d(TAG, "rememberCurrentPhoto: $indexToReturn ")
-                viewModel.selectedImage(indexToReturn)
+            .collect() { firstIndex ->
+                firstIndex + 4
+                viewModel.selectedImage(firstIndex + 4)
             }
     }
 }

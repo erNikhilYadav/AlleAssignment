@@ -13,7 +13,7 @@ import androidx.compose.ui.geometry.Size
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-internal data class MediaPhoto(
+data class MediaPhoto(
     val name: String,
     val uri: Uri,
     val size: Size
@@ -35,13 +35,23 @@ internal fun rememberMediaPhotos(
                 MediaStore.Images.Media.WIDTH
             )
 
+            val whereClause = buildString {
+                append("(${MediaStore.Images.Media.DISPLAY_NAME} LIKE ? OR ")
+                append("${MediaStore.Images.Media.DATA} LIKE ?)")
+            }
+
+            val whereArgs = arrayOf(
+                "%Screenshot%",
+                "%/Pictures/Screenshots%"
+            )
+
             val sortOrder = "${MediaStore.Images.Media.DATE_ADDED} DESC"
 
             val query = context.contentResolver.query(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 projection,
-                null,
-                null,
+                whereClause,
+                whereArgs,
                 sortOrder
             )
 
@@ -50,7 +60,6 @@ internal fun rememberMediaPhotos(
                 val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME)
                 val heightColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.HEIGHT)
                 val widthColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.WIDTH)
-
                 while (cursor.moveToNext()) {
                     val id = cursor.getLong(idColumn)
                     val name = cursor.getString(nameColumn)
@@ -60,7 +69,6 @@ internal fun rememberMediaPhotos(
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                         id
                     )
-
                     photos.add(
                         MediaPhoto(
                             name = name,

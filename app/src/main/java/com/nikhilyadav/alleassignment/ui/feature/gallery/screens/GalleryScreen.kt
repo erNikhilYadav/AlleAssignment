@@ -1,6 +1,6 @@
 package com.nikhilyadav.alleassignment.ui.feature.gallery.screens
 
-import android.util.Log
+import android.net.Uri
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -23,19 +23,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.nikhilyadav.alleassignment.components.AsyncImageView
 import com.nikhilyadav.alleassignment.ui.feature.gallery.GalleryViewModel
 import com.nikhilyadav.alleassignment.ui.theme.AlleAssignmentTheme
+import com.nikhilyadav.alleassignment.utils.MediaPhoto
 import com.nikhilyadav.alleassignment.utils.rememberCurrentPhoto
 import com.nikhilyadav.alleassignment.utils.rememberMediaPhotos
 
@@ -53,12 +54,14 @@ fun GalleryScreen(
     val heightOfItem = 60.dp
     val heightOfSelectedItem = 70.dp
 
-    val photos = rememberMediaPhotos(context = LocalContext.current)
+    var photos = mutableListOf<MediaPhoto>()
+    addPlaceHoldersInList(photos)
+    photos = (photos + rememberMediaPhotos(context = LocalContext.current)).toMutableList()
+    addPlaceHoldersInList(photos)
 
     Box(modifier = Modifier.fillMaxSize()) {
         if (photos.isNotEmpty()) {
-            Log.d(TAG, "GalleryScreen: $selectedIndex")
-            if (selectedIndex >= 0) {
+            if (photos.size > 8) {
                 AsyncImageView(
                     imgRequest = ImageRequest.Builder(LocalContext.current)
                         .data(photos[selectedIndex].uri)
@@ -67,10 +70,10 @@ fun GalleryScreen(
                     modifier = Modifier.fillMaxSize()
                 )
             } else {
-                ErrorView(errorMsg = "Something Went Wrong")
+                ErrorView(errorMsg = "Screenshots not available")
             }
         } else {
-            ErrorView(errorMsg = "Images not available")
+            ErrorView(errorMsg = "Screenshots not available")
         }
         Column(
             verticalArrangement = Arrangement.Bottom, modifier = Modifier.fillMaxSize()
@@ -89,36 +92,48 @@ fun GalleryScreen(
                         targetValue = if (selectedIndex == index) heightOfSelectedItem else heightOfItem,
                         animationSpec = tween(durationMillis = 200), label = ""
                     )
-                    DummyListItems(index, widthOfItem, 0)
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .height(height)
-                            .width(widthOfItem)
-                            .background(
-                                Brush.verticalGradient(
-                                    colors = listOf(Color.Black, Color.Black)
-                                ),
-                                shape = RoundedCornerShape(10f),
-                                alpha = 0.2f
-                            )
-                            .padding(2.dp)
-                            .clip(RoundedCornerShape(10f))
-                    ) {
-                        AsyncImageView(
-                            imgRequest = ImageRequest.Builder(LocalContext.current)
-                                .data(item.uri)
-                                .diskCachePolicy(CachePolicy.ENABLED)
-                                .memoryCachePolicy(CachePolicy.ENABLED)
-                                .build(), modifier = Modifier.fillMaxSize()
+                    if (index in 0..3 || index in photos.size - 4..<photos.size) {
+                        Box(
+                            modifier = Modifier
+                                .height(60.dp)
+                                .width(widthOfItem)
+                                .padding(2.dp)
                         )
+                    } else {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .height(height)
+                                .width(widthOfItem)
+                                .background(
+                                    Brush.verticalGradient(colors = listOf(Color.Black, Color.Black)),
+                                    shape = RoundedCornerShape(10f),
+                                    alpha = 0.2f
+                                )
+                                .padding(2.dp)
+                                .clip(RoundedCornerShape(10f))
+                        ) {
+                            AsyncImageView(
+                                imgRequest = ImageRequest.Builder(LocalContext.current)
+                                    .data(item.uri)
+                                    .diskCachePolicy(CachePolicy.ENABLED)
+                                    .memoryCachePolicy(CachePolicy.ENABLED)
+                                    .build(), modifier = Modifier.fillMaxSize()
+                            )
+                        }
                     }
-                    DummyListItems(index, widthOfItem, photos.size - 1)
                 }
             }
         }
     }
+
     rememberCurrentPhoto(listState, viewModel)
+}
+
+fun addPlaceHoldersInList(photos: MutableList<MediaPhoto>) {
+    for (i in 1..4) {
+        photos.add(MediaPhoto("", Uri.EMPTY, Size.Unspecified))
+    }
 }
 
 @Composable
@@ -132,20 +147,6 @@ fun ErrorView(errorMsg: String) {
             text = errorMsg,
             textAlign = TextAlign.Center
         )
-    }
-}
-
-@Composable
-fun DummyListItems(index: Int, widthOfItem: Dp, condition: Int) {
-    if (index == condition) {
-        for (i in 1..4) {
-            Box(
-                modifier = Modifier
-                    .height(60.dp)
-                    .width(widthOfItem)
-                    .padding(2.dp)
-            )
-        }
     }
 }
 
