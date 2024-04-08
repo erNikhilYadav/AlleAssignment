@@ -17,7 +17,7 @@ Android gallery app replicating the iOS Photos Application aesthetic. Built with
 
 **Get Started**
 
-Download APK: [Direct link to APK file](https://github.com/erNikhilYadav/AlleAssignment/blob/master/apk-debug.apk)
+Download APK: [Direct link to APK file](https://github.com/erNikhilYadav/AlleAssignment/blob/master/app-debug.apk)
 
 **Tech**
 
