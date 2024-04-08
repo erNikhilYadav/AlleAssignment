@@ -31,6 +31,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.nikhilyadav.alleassignment.components.AsyncImageView
@@ -66,6 +67,8 @@ fun GalleryScreen(
                     imgRequest = ImageRequest.Builder(LocalContext.current)
                         .data(photos[selectedIndex].uri)
                         .crossfade(true)
+                        .diskCachePolicy(CachePolicy.ENABLED)
+                        .memoryCachePolicy(CachePolicy.ENABLED)
                         .build(),
                     modifier = Modifier.fillMaxSize()
                 )
@@ -90,27 +93,36 @@ fun GalleryScreen(
                 itemsIndexed(photos) { index, item ->
                     val height by animateDpAsState(
                         targetValue = if (selectedIndex == index) heightOfSelectedItem else heightOfItem,
-                        animationSpec = tween(durationMillis = 200), label = ""
+                        animationSpec = tween(durationMillis = 400), label = ""
+                    )
+                    val width by animateDpAsState(
+                        targetValue = if (selectedIndex == index) (widthOfItem + 2.dp) else widthOfItem,
+                        animationSpec = tween(durationMillis = 400), label = ""
                     )
                     if (index in 0..3 || index in photos.size - 4..<photos.size) {
                         Box(
                             modifier = Modifier
                                 .height(60.dp)
                                 .width(widthOfItem)
-                                .padding(2.dp)
                         )
                     } else {
                         Box(
                             contentAlignment = Alignment.Center,
                             modifier = Modifier
                                 .height(height)
-                                .width(widthOfItem)
+                                .width(width)
                                 .background(
-                                    Brush.verticalGradient(colors = listOf(Color.Black, Color.Black)),
+                                    Brush.verticalGradient(
+                                        colors = listOf(
+                                            Color.Black,
+                                            Color.Black
+                                        )
+                                    ),
                                     shape = RoundedCornerShape(10f),
                                     alpha = 0.2f
                                 )
                                 .padding(2.dp)
+                                .zIndex(if (selectedIndex == index) 1.2f else 1f)
                                 .clip(RoundedCornerShape(10f))
                         ) {
                             AsyncImageView(
