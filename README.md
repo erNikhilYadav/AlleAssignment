@@ -12,12 +12,12 @@ Android gallery app replicating the iOS Photos Application aesthetic. Built with
 
 **Demo**
 
-[Link to video walkthrough](https://github.com/erNikhilYadav/AlleAssignment/blob/main/Screen_recording_20240408_230204.mp4)
+[Link to video walkthrough](https://github.com/erNikhilYadav/AlleAssignment/blob/master/Screen_recording_20240408_230204.mp4)
 
 
 **Get Started**
 
-Download APK: [Direct link to APK file](https://github.com/erNikhilYadav/AlleAssignment/blob/main/apk-debug.apk)
+Download APK: [Direct link to APK file](https://github.com/erNikhilYadav/AlleAssignment/blob/master/apk-debug.apk)
 
 **Tech**
 
